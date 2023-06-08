@@ -4,7 +4,7 @@ set -e
 
 git clone https://github.com/sharan-vayakkady/notify.git
 
-cd notfy
+cd notify
 
 # Checkout the main branch
 git checkout main
