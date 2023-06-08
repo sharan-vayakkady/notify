@@ -21,7 +21,7 @@ git pull
 # Merge the main branch into staging
 if git merge-base --is-ancestor main HEAD; then
   echo "No merge conflicts detected."
-test = 5
+test = 10
 else
   echo "Merge conflict detected!"
   test = 5
