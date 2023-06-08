@@ -20,7 +20,7 @@ jobs:
           ./merge_conflict_check.sh
 
       - name: Send Slack Notification
-        uses: 8398a7/action-slack-notify@v2
+        uses: rtCamp/action-slack-notify@v5
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
         with:
