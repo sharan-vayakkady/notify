@@ -19,15 +19,16 @@ jobs:
           chmod +x merge_conflict_check.sh
           ./merge_conflict_check.sh
 
-      - name: Send Slack Notification
-        uses: rtCamp/action-slack-notify@v2
-        env:
+      - name: Notify Slack
+      env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-        with:
-          status: 'failure'
-          fields: 'branch,commit,message'
-          message: |
-            Merge conflict detected in a pull request!
-            Branch: ${{ github.ref }}
-            Commit: ${{ github.sha }}
-            Message: ${{ github.event.pull_request.title }}
+      if test = 5
+      run: |
+        curl -X POST -H 'Content-type: application/json' --data '{
+          "text": "Merge conflict ditected.\n\nRepository: ${{ github.repository }}\nTitle: ${{ github.event.pull_request.title }}\nAuthor: ${{ github.event.pull_request.user.login }}\nURL: ${{ github.event.pull_request.html_url }}"
+        }' $SLACK_WEBHOOK_URL
+      else 
+      curl -X POST -H 'Content-type: application/json' --data '{
+          "text": "no conflict.\n\nRepository: ${{ github.repository }}\nTitle: ${{ github.event.pull_request.title }}\nAuthor: ${{ github.event.pull_request.user.login }}\nURL: ${{ github.event.pull_request.html_url }}"
+        }' $SLACK_WEBHOOK_URL
+       
