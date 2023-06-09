@@ -1,0 +1,50 @@
+name: GitHub Actions compare branches
+on:
+   push:
+    branches:
+      - main
+env:
+ USERNAME: "ci-bot"
+ EMAIL: "sharan.vayakkady@gmail.com"
+ ORIGIN_BRANCH: main
+ MERGE_BRANCH: staging
+ 
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    # Permissions for interacting with Github OIDC token
+    permissions:
+     id-token: write
+     contents: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+            ref: main
+
+      - name: Compare Main and Staging
+        id: branch-compare
+        run: ./merge_conflict_check.sh
+        
+      - name: Send alert to slack
+        if: steps.branch-compare.outputs.COMPARE_RESULT != null
+        id: slack
+        uses: slackapi/slack-github-action@v1.23.0
+        with:
+          # For posting a rich message using Block Kit
+          payload: |
+            {
+              "text": "Compare branches result",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": loudspeaker: Comparison result of ${{ env.ORIGIN_BRANCH }} branch and ${{ env.MERGE_BRANCH }} branch is: ${{ steps.branch-compare.outputs.COMPARE_RESULT }}"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
